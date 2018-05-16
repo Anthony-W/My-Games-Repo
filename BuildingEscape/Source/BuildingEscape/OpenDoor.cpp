@@ -2,6 +2,7 @@
 
 #include "OpenDoor.h"
 #include "GameFramework/Actor.h"
+#include "Engine/World.h"
 
 
 // Sets default values for this component's properties
@@ -19,6 +20,10 @@ UOpenDoor::UOpenDoor()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	initialAngle = GetOwner()->GetActorRotation().Yaw;
+
+	actorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 
@@ -37,7 +42,7 @@ void UOpenDoor::OpenDoor()
 {
 	AActor *owner = GetOwner();
 
-	FRotator newRotation = FRotator(0.f, 60.f, 0.f);
+	FRotator newRotation = FRotator(0.f, initialAngle+60, 0.f);
 
 	owner->SetActorRotation(newRotation);
 }
@@ -46,7 +51,7 @@ void UOpenDoor::CloseDoor()
 {
 	AActor *owner = GetOwner();
 
-	FRotator newRotation = FRotator(0.f, 0.f, 0.f);
+	FRotator newRotation = FRotator(0.f, initialAngle, 0.f);
 
 	owner->SetActorRotation(newRotation);
 }
