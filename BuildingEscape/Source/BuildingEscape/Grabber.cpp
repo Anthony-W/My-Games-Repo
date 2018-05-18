@@ -24,15 +24,29 @@ void UGrabber::BeginPlay()
 	physicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	if (physicsHandle)
 	{
-
+		//we have a physics handle
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s does not have a PhysicsHandleComponent"), *GetOwner()->GetName())
 	}
 
-	// ...
+	///look for attached InputComponent
+	inputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+	if (inputComponent)
+	{
+		inputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s does not have a UInputComponent"), *GetOwner()->GetName())
+	}
 	
+}
+
+void UGrabber::Grab()
+{
+
 }
 
 
