@@ -28,7 +28,18 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (physicsHandle->GrabbedComponent)
+	{
+		///get the viewpoint location and rotation
+		FVector viewLocation;
+		FRotator viewRotation;
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(viewLocation, viewRotation);
 
+		///draw debug line
+		FVector lineEnd = viewLocation + (reach * viewRotation.Vector());
+
+		physicsHandle->SetTargetLocation(lineEnd);
+	}
 }
 
 void UGrabber::FindPhysicsHandleComponent()
@@ -60,12 +71,19 @@ void UGrabber::FindInputComponent()
 
 void UGrabber::Grab()
 {
-	GetFirstPhysicsBodyInReach();
+	auto hitResult = GetFirstPhysicsBodyInReach();
+	auto componentToGrab = hitResult.GetComponent();
+	auto actorHit = hitResult.GetActor();
+
+	if (actorHit)
+	{
+		physicsHandle->GrabComponent(componentToGrab, NAME_None, actorHit->GetActorLocation(), true);
+	}
 }
 
 void UGrabber::Release()
 {
-
+	physicsHandle->ReleaseComponent();
 }
 
 const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
@@ -77,7 +95,6 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 
 	///draw debug line
 	FVector lineEnd = viewLocation + (reach * viewRotation.Vector());
-	DrawDebugLine(GetWorld(), viewLocation, lineEnd, FColor(255, 0, 0), false, 0.f, 0.f, 10.f);
 
 	///setup query parameters
 	FCollisionQueryParams queryParams(FName(TEXT("")), false, GetOwner());
