@@ -10,8 +10,6 @@ UGrabber::UGrabber()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 
@@ -20,7 +18,21 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	///look for attached physics handle
+	FindPhysicsHandleComponent();
+
+	FindInputComponent();
+}
+
+// Called every frame
+void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+
+}
+
+void UGrabber::FindPhysicsHandleComponent()
+{
 	physicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	if (physicsHandle)
 	{
@@ -30,8 +42,10 @@ void UGrabber::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s does not have a PhysicsHandleComponent"), *GetOwner()->GetName())
 	}
+}
 
-	///look for attached InputComponent
+void UGrabber::FindInputComponent()
+{
 	inputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 	if (inputComponent)
 	{
@@ -42,12 +56,11 @@ void UGrabber::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s does not have a UInputComponent"), *GetOwner()->GetName())
 	}
-	
 }
 
 void UGrabber::Grab()
 {
-
+	GetFirstPhysicsBodyInReach();
 }
 
 void UGrabber::Release()
@@ -55,12 +68,8 @@ void UGrabber::Release()
 
 }
 
-
-// Called every frame
-void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	///get the viewpoint location and rotation
 	FVector viewLocation;
 	FRotator viewRotation;
@@ -81,14 +90,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		lineEnd,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		queryParams
-		);
+	);
 
-	AActor* actorHit = hit.GetActor();
-	
-	///check for input regarding found actor
-	if (actorHit)
-	{
-		
-	}
+	return hit;
 }
-
