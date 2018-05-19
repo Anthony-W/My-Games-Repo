@@ -4,6 +4,8 @@
 #include "Engine/World.h"
 #include "Public/DrawDebugHelpers.h"
 
+#define OUT
+
 // Sets default values for this component's properties
 UGrabber::UGrabber()
 {
@@ -60,7 +62,7 @@ FVector UGrabber::GetReachLineEnd()
 	///get the viewpoint location and rotation
 	FVector viewLocation;
 	FRotator viewRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(viewLocation, viewRotation);
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT viewLocation, OUT viewRotation);
 
 	FVector lineEnd = viewLocation + (reach * viewRotation.Vector());
 
@@ -72,7 +74,7 @@ FVector UGrabber::GetReachLineStart()
 	///get the viewpoint location and rotation
 	FVector viewLocation;
 	FRotator viewRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(viewLocation, viewRotation);
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT viewLocation, OUT viewRotation);
 
 	return viewLocation;
 }
@@ -106,7 +108,7 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 	///raycast
 	FHitResult hit;
 	GetWorld()->LineTraceSingleByObjectType(
-		hit,
+		OUT hit,
 		lineStart,
 		lineEnd,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
