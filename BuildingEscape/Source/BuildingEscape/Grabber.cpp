@@ -7,8 +7,6 @@
 // Sets default values for this component's properties
 UGrabber::UGrabber()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
@@ -17,9 +15,7 @@ UGrabber::UGrabber()
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
-
 	FindPhysicsHandleComponent();
-
 	FindInputComponent();
 }
 
@@ -30,13 +26,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	if (physicsHandle->GrabbedComponent)
 	{
-		///get the viewpoint location and rotation
-		FVector viewLocation;
-		FRotator viewRotation;
-		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(viewLocation, viewRotation);
-
-		///draw debug line
-		FVector lineEnd = viewLocation + (reach * viewRotation.Vector());
+		FVector lineEnd = GetReachLineEnd();
 
 		physicsHandle->SetTargetLocation(lineEnd);
 	}
@@ -45,11 +35,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 void UGrabber::FindPhysicsHandleComponent()
 {
 	physicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (physicsHandle)
-	{
-		//we have a physics handle
-	}
-	else
+	if (physicsHandle == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s does not have a PhysicsHandleComponent"), *GetOwner()->GetName())
 	}
@@ -67,6 +53,28 @@ void UGrabber::FindInputComponent()
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s does not have a UInputComponent"), *GetOwner()->GetName())
 	}
+}
+
+FVector UGrabber::GetReachLineEnd()
+{
+	///get the viewpoint location and rotation
+	FVector viewLocation;
+	FRotator viewRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(viewLocation, viewRotation);
+
+	FVector lineEnd = viewLocation + (reach * viewRotation.Vector());
+
+	return lineEnd;
+}
+
+FVector UGrabber::GetReachLineStart()
+{
+	///get the viewpoint location and rotation
+	FVector viewLocation;
+	FRotator viewRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(viewLocation, viewRotation);
+
+	return viewLocation;
 }
 
 void UGrabber::Grab()
@@ -88,13 +96,9 @@ void UGrabber::Release()
 
 const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 {
-	///get the viewpoint location and rotation
-	FVector viewLocation;
-	FRotator viewRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(viewLocation, viewRotation);
-
-	///draw debug line
-	FVector lineEnd = viewLocation + (reach * viewRotation.Vector());
+	///get the start and end of reach line
+	FVector lineStart = GetReachLineStart();
+	FVector lineEnd = GetReachLineEnd();
 
 	///setup query parameters
 	FCollisionQueryParams queryParams(FName(TEXT("")), false, GetOwner());
@@ -103,7 +107,7 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 	FHitResult hit;
 	GetWorld()->LineTraceSingleByObjectType(
 		hit,
-		viewLocation,
+		lineStart,
 		lineEnd,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		queryParams

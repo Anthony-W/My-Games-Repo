@@ -34,8 +34,9 @@ private:
 	UInputComponent* inputComponent = nullptr;
 
 	void FindPhysicsHandleComponent();
-
 	void FindInputComponent();
+	FVector GetReachLineEnd();
+	FVector GetReachLineStart();
 
 	//raycast and grab what is in reach
 	void Grab();
