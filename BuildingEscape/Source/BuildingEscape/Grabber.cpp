@@ -25,6 +25,8 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (!physicsHandle) return;
+
 	if (physicsHandle->GrabbedComponent)
 	{
 		FVector lineEnd = GetReachLineEnd();
@@ -80,6 +82,8 @@ FVector UGrabber::GetReachLineStart()
 
 void UGrabber::Grab()
 {
+	if (!physicsHandle) return;
+
 	auto hitResult = GetFirstPhysicsBodyInReach();
 	auto componentToGrab = hitResult.GetComponent();
 	auto actorHit = hitResult.GetActor();
@@ -92,6 +96,8 @@ void UGrabber::Grab()
 
 void UGrabber::Release()
 {
+	if (!physicsHandle) return;
+
 	physicsHandle->ReleaseComponent();
 }
 

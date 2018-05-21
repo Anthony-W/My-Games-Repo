@@ -34,7 +34,7 @@ private:
 	float initialAngle = 0.f;
 
 	UPROPERTY(EditAnywhere)
-	ATriggerVolume* pressurePlate;
+	ATriggerVolume* pressurePlate = nullptr;
 	
 	UPROPERTY(EditAnywhere)
 	float doorCloseDelay = 1.f;
