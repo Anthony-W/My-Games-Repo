@@ -42,4 +42,6 @@ private:
 	float openMass = 100.f;
 
 	float TotalMassOnPressurePlate();
+
+	bool closed = true;
 };

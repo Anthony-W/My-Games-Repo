@@ -41,12 +41,20 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	//open the door
 	if (TotalMassOnPressurePlate() >= openMass)
 	{
-		OnOpenRequest.Broadcast();
+		if (closed)
+		{
+			closed = false;
+			OnOpenRequest.Broadcast();
+		}
 	}
 	//close the door
 	else
 	{
-		OnCloseRequest.Broadcast();
+		if (!closed)
+		{
+			closed = true;
+			OnCloseRequest.Broadcast();
+		}
 	}
 }
 
