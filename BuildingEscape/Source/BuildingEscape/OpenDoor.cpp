@@ -23,9 +23,6 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//get the starting angle of the door
-	initialAngle = GetOwner()->GetActorRotation().Yaw;
-
 	if (!pressurePlate)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s does not have a pressurePlate component"), *GetOwner()->GetName())
@@ -44,25 +41,13 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	//open the door
 	if (TotalMassOnPressurePlate() >= openMass)
 	{
-		OpenDoor();
-		lastDoorOpenTime = time;
+		OnOpenRequest.Broadcast();
 	}
 	//close the door
-	else if (time - lastDoorOpenTime > doorCloseDelay)
+	else
 	{
-		CloseDoor();
+		OnCloseRequest.Broadcast();
 	}
-}
-
-void UOpenDoor::OpenDoor()
-{
-	//GetOwner()->SetActorRotation(FRotator(0.f, initialAngle + 120, 0.f));
-	OnOpenRequest.Broadcast();
-}
-
-void UOpenDoor::CloseDoor()
-{
-	GetOwner()->SetActorRotation(FRotator(0.f, initialAngle, 0.f));
 }
 
 float UOpenDoor::TotalMassOnPressurePlate()

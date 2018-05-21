@@ -9,6 +9,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenRequest);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCloseRequest);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
 {
@@ -29,24 +31,15 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnOpenRequest OnOpenRequest;
 
-	virtual void OpenDoor();
-
-	virtual void CloseDoor();
+	UPROPERTY(BlueprintAssignable)
+	FOnCloseRequest OnCloseRequest;
 
 private:
-	UPROPERTY(VisibleAnywhere)
-	float initialAngle = 0.f;
-
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume* pressurePlate = nullptr;
-	
-	UPROPERTY(EditAnywhere)
-	float doorCloseDelay = 1.f;
 
 	UPROPERTY(EditAnywhere)
 	float openMass = 100.f;
-
-	float lastDoorOpenTime;
 
 	float TotalMassOnPressurePlate();
 };
