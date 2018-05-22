@@ -1,14 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "OpenDoor.h"
-#include "GameFramework/Actor.h"
-#include "Engine/World.h"
+#include "PressurePlateController.h"
 #include "Classes/Components/PrimitiveComponent.h"
 
-#define OUT
-
 // Sets default values for this component's properties
-UOpenDoor::UOpenDoor()
+UPressurePlateController::UPressurePlateController()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -19,7 +15,7 @@ UOpenDoor::UOpenDoor()
 
 
 // Called when the game starts
-void UOpenDoor::BeginPlay()
+void UPressurePlateController::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -27,35 +23,36 @@ void UOpenDoor::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s does not have a pressurePlate component"), *GetOwner()->GetName())
 	}
+	
 }
 
 
 // Called every frame
-void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UPressurePlateController::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	//open the door
-	if (TotalMassOnPressurePlate() >= openMass)
+	if (TotalMassOnPressurePlate() < openMass)
 	{
-		if (closed)
+		if (pressed)
 		{
-			closed = false;
-			OnOpenRequest.Broadcast();
+			pressed = false;
+			OnRelease.Broadcast();
 		}
 	}
 	//close the door
 	else
 	{
-		if (!closed)
+		if (!pressed)
 		{
-			closed = true;
-			OnCloseRequest.Broadcast();
+			pressed = true;
+			OnPush.Broadcast();
 		}
 	}
 }
 
-float UOpenDoor::TotalMassOnPressurePlate()
+float UPressurePlateController::TotalMassOnPressurePlate()
 {
 	if (!pressurePlate) return -1;
 
